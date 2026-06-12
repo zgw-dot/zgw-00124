@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>巡店问题闭环看板</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-inner">
+        <div class="logo">
+          <span class="logo-icon">📋</span>
+          <h1 class="logo-text">巡店问题闭环看板</h1>
+        </div>
+        
+        <div class="header-actions">
+          <div class="user-info">
+            <span class="user-avatar" id="userAvatar">张</span>
+            <div class="user-detail">
+              <span class="user-name" id="userName">张督导</span>
+              <span class="user-role" id="userRole">督导</span>
+            </div>
+          </div>
+          
+          <div class="role-switcher">
+            <select id="roleSelect" class="role-select">
+              <option value="supervisor">切换角色：督导</option>
+              <option value="store1">切换角色：朝阳路店</option>
+              <option value="store2">切换角色：海淀店</option>
+              <option value="store3">切换角色：西城店</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="nav">
+        <button class="nav-btn active" data-page="dashboard">
+          <span class="nav-icon">📊</span>
+          <span class="nav-text">仪表盘</span>
+        </button>
+        <button class="nav-btn" data-page="issues">
+          <span class="nav-icon">📝</span>
+          <span class="nav-text">问题列表</span>
+        </button>
+        <button class="nav-btn" data-page="config">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-text">系统配置</span>
+        </button>
+      </nav>
+    </header>
+
+    <main class="main">
+      <section id="page-dashboard" class="page active">
+        <div class="page-header">
+          <h2 class="page-title">数据概览</h2>
+          <button class="btn btn-primary btn-create" id="btnCreateIssueDesktop">
+            <span>+</span> 创建问题
+          </button>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-card stat-total">
+            <div class="stat-icon">📋</div>
+            <div class="stat-content">
+              <div class="stat-value" id="statTotal">0</div>
+              <div class="stat-label">问题总数</div>
+            </div>
+          </div>
+          <div class="stat-card stat-pending">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-content">
+              <div class="stat-value" id="statPending">0</div>
+              <div class="stat-label">待接单</div>
+            </div>
+          </div>
+          <div class="stat-card stat-rectifying">
+            <div class="stat-icon">🔧</div>
+            <div class="stat-content">
+              <div class="stat-value" id="statRectifying">0</div>
+              <div class="stat-label">整改中</div>
+            </div>
+          </div>
+          <div class="stat-card stat-rechecking">
+            <div class="stat-icon">🔍</div>
+            <div class="stat-content">
+              <div class="stat-value" id="statRechecking">0</div>
+              <div class="stat-label">待复验</div>
+            </div>
+          </div>
+          <div class="stat-card stat-closed">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+              <div class="stat-value" id="statClosed">0</div>
+              <div class="stat-label">已关闭</div>
+            </div>
+          </div>
+          <div class="stat-card stat-overdue">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-content">
+              <div class="stat-value" id="statOverdue">0</div>
+              <div class="stat-label">已逾期</div>
+            </div>
+            <div class="stat-ratio">
+              <span id="statOverdueRatio">0%</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="dashboard-grid">
+          <div class="panel">
+            <div class="panel-header">
+              <h3 class="panel-title">门店分布</h3>
+            </div>
+            <div class="panel-body">
+              <div class="store-stats" id="storeStats"></div>
+            </div>
+          </div>
+          
+          <div class="panel">
+            <div class="panel-header">
+              <h3 class="panel-title">分类统计</h3>
+            </div>
+            <div class="panel-body">
+              <div class="category-stats" id="categoryStats"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="panel">
+          <div class="panel-header">
+            <h3 class="panel-title">最近问题</h3>
+            <button class="btn-link" data-page="issues">查看全部 →</button>
+          </div>
+          <div class="panel-body">
+            <div class="issue-list-mini" id="recentIssues"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-issues" class="page">
+        <div class="page-header">
+          <h2 class="page-title">问题列表</h2>
+          <button class="btn btn-primary btn-create" id="btnCreateIssue">
+            <span>+</span> 创建问题
+          </button>
+        </div>
+        
+        <div class="filter-bar">
+          <div class="filter-row">
+            <div class="filter-item">
+              <label>门店</label>
+              <select id="filterStore">
+                <option value="all">全部门店</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label>状态</label>
+              <select id="filterStatus">
+                <option value="all">全部状态</option>
+                <option value="pending">待接单</option>
+                <option value="rectifying">整改中</option>
+                <option value="rechecking">待复验</option>
+                <option value="closed">已关闭</option>
+                <option value="rejected">复验不通过</option>
+              </select>
+            </div>
+            <div class="filter-item">
+              <label>超期</label>
+              <select id="filterOverdue">
+                <option value="all">全部</option>
+                <option value="1">已超期</option>
+                <option value="0">未超期</option>
+              </select>
+            </div>
+            <div class="filter-item filter-keyword">
+              <label>搜索</label>
+              <input type="text" id="filterKeyword" placeholder="搜索问题标题...">
+            </div>
+            <div class="filter-actions">
+              <button class="btn btn-secondary" id="btnResetFilter">重置</button>
+              <button class="btn btn-export" id="btnExport">
+                <span>📥</span> 导出
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="issues-table-container">
+          <table class="issues-table">
+            <thead>
+              <tr>
+                <th>问题标题</th>
+                <th class="hide-mobile">分类</th>
+                <th class="hide-mobile">门店</th>
+                <th>责任人</th>
+                <th>状态</th>
+                <th class="hide-mobile">截止时间</th>
+                <th class="hide-mobile">创建时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="issuesTableBody">
+            </tbody>
+          </table>
+          
+          <div class="empty-state" id="emptyState" style="display:none;">
+            <div class="empty-icon">📭</div>
+            <p>暂无问题数据</p>
+          </div>
+        </div>
+        
+        <div class="pagination" id="pagination"></div>
+      </section>
+
+      <section id="page-config" class="page">
+        <div class="page-header">
+          <h2 class="page-title">系统配置</h2>
+        </div>
+        
+        <div class="panel">
+          <div class="panel-header">
+            <h3 class="panel-title">阈值配置</h3>
+          </div>
+          <div class="panel-body">
+            <form class="config-form" id="configForm">
+              <div class="form-group">
+                <label for="overdueThresholdDays">超期提醒阈值（天）</label>
+                <input type="number" id="overdueThresholdDays" min="1" max="30" value="3">
+                <p class="form-help">问题截止时间超过该天数后标记为超期</p>
+              </div>
+              <div class="form-group">
+                <label for="warningThresholdDays">预警提醒阈值（天）</label>
+                <input type="number" id="warningThresholdDays" min="1" max="30" value="1">
+                <p class="form-help">距离截止时间不足该天数时显示预警</p>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">保存配置</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <div class="panel">
+          <div class="panel-header">
+            <h3 class="panel-title">数据管理</h3>
+          </div>
+          <div class="panel-body">
+            <p class="config-note">数据存储在后端 data 目录中，后端重启后数据不丢失。</p>
+            <p class="config-note">筛选条件和当前角色保存在浏览器 localStorage 中。</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="modal-overlay" id="modalOverlay" style="display:none;">
+      <div class="modal" id="modal">
+        <div class="modal-header">
+          <h3 class="modal-title" id="modalTitle">标题</h3>
+          <button class="modal-close" id="modalClose">×</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer" id="modalFooter"></div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" style="display:none;"></div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/modal.js"></script>
+</body>
+</html>

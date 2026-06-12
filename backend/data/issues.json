@@ -1,0 +1,196 @@
+[
+  {
+    "id": "issue-1781284002213-kuch3jbiq",
+    "title": "货架陈列不规范",
+    "description": "零食区货架陈列凌乱，价签缺失，影响顾客购物体验",
+    "category": "安全",
+    "status": "rectifying",
+    "storeId": "s1",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "responsibleId": "u2",
+    "responsibleName": "王店长",
+    "deadline": 1781514300000,
+    "createdAt": 1781284002213,
+    "updatedAt": 1781284449167,
+    "attachments": [],
+    "rectifyContent": "",
+    "rectifyAttachments": [],
+    "timeline": [
+      {
+        "id": "t-1781284002213-ap9lqcabq",
+        "action": "created",
+        "actionName": "创建问题",
+        "userId": "u1",
+        "userName": "张督导",
+        "time": 1781284002213,
+        "remark": "零食区货架陈列凌乱，价签缺失，影响顾客购物体验"
+      },
+      {
+        "id": "t-1781284449167-j2a1878wp",
+        "action": "accepted",
+        "actionName": "门店接单",
+        "userId": "u2",
+        "userName": "王店长",
+        "time": 1781284449167,
+        "remark": "已接单，开始整改"
+      }
+    ],
+    "extensionHistory": []
+  },
+  {
+    "id": "issue-001",
+    "title": "消防通道堆放杂物",
+    "description": "后门消防通道堆放纸箱和清洁工具，存在安全隐患",
+    "category": "安全",
+    "status": "pending",
+    "storeId": "s1",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "responsibleId": "u2",
+    "responsibleName": "王店长",
+    "deadline": 1781456449902,
+    "createdAt": 1781197249902,
+    "updatedAt": 1781197249902,
+    "attachments": [
+      "/mock/images/fire_exit.jpg"
+    ],
+    "timeline": [
+      {
+        "id": "t1",
+        "action": "created",
+        "actionName": "创建问题",
+        "userId": "u1",
+        "userName": "张督导",
+        "time": 1781197249902,
+        "remark": "巡查时发现消防通道有杂物堆积"
+      }
+    ],
+    "extensionHistory": []
+  },
+  {
+    "id": "issue-002",
+    "title": "员工仪容仪表不规范",
+    "description": "部分员工未佩戴工牌，工作服不整洁",
+    "category": "服务",
+    "status": "rectifying",
+    "storeId": "s2",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "responsibleId": "u3",
+    "responsibleName": "李店长",
+    "deadline": 1781370049902,
+    "createdAt": 1781110849902,
+    "updatedAt": 1781240449902,
+    "attachments": [
+      "/mock/images/uniform.jpg"
+    ],
+    "rectifyContent": "",
+    "rectifyAttachments": [],
+    "timeline": [
+      {
+        "id": "t1",
+        "action": "created",
+        "actionName": "创建问题",
+        "userId": "u1",
+        "userName": "张督导",
+        "time": 1781110849902,
+        "remark": "早班检查发现仪容仪表问题"
+      },
+      {
+        "id": "t2",
+        "action": "accepted",
+        "actionName": "门店接单",
+        "userId": "u3",
+        "userName": "李店长",
+        "time": 1781240449902,
+        "remark": "已收到，立即整改"
+      }
+    ],
+    "extensionHistory": []
+  },
+  {
+    "id": "issue-003",
+    "title": "冷藏柜温度不达标",
+    "description": "生鲜区冷藏柜温度显示为8℃，要求为0-4℃",
+    "category": "质量",
+    "status": "rechecking",
+    "storeId": "s3",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "responsibleId": "u4",
+    "responsibleName": "赵店长",
+    "deadline": 1781197249902,
+    "createdAt": 1780851649902,
+    "updatedAt": 1781262049902,
+    "attachments": [
+      "/mock/images/fridge.jpg"
+    ],
+    "rectifyContent": "已联系维修人员上门检修，更换了温控器",
+    "rectifyAttachments": [
+      "/mock/images/fridge_repaired.jpg"
+    ],
+    "timeline": [
+      {
+        "id": "t1",
+        "action": "created",
+        "actionName": "创建问题",
+        "userId": "u1",
+        "userName": "张督导",
+        "time": 1780851649902,
+        "remark": "温度检测超标"
+      },
+      {
+        "id": "t2",
+        "action": "accepted",
+        "actionName": "门店接单",
+        "userId": "u4",
+        "userName": "赵店长",
+        "time": 1780938049902,
+        "remark": "已收到"
+      },
+      {
+        "id": "t3",
+        "action": "extension_request",
+        "actionName": "申请延期",
+        "userId": "u4",
+        "userName": "赵店长",
+        "time": 1781110849902,
+        "remark": "维修配件需调货，申请延期2天",
+        "extensionDays": 2,
+        "extensionReason": "维修配件需从厂家调货"
+      },
+      {
+        "id": "t4",
+        "action": "extension_approved",
+        "actionName": "延期批准",
+        "userId": "u1",
+        "userName": "张督导",
+        "time": 1781114449902,
+        "remark": "同意延期",
+        "extensionDays": 2
+      },
+      {
+        "id": "t5",
+        "action": "rectified",
+        "actionName": "提交整改",
+        "userId": "u4",
+        "userName": "赵店长",
+        "time": 1781262049902,
+        "remark": "已完成维修"
+      }
+    ],
+    "extensionHistory": [
+      {
+        "id": "e1",
+        "requestDays": 2,
+        "reason": "维修配件需从厂家调货",
+        "status": "approved",
+        "requestedAt": 1781110849902,
+        "approvedAt": 1781114449902,
+        "approverId": "u1",
+        "approverName": "张督导"
+      }
+    ]
+  }
+]
