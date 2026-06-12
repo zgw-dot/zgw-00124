@@ -243,12 +243,14 @@ function generateId(prefix) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
-function isOverdue(issue) {
+function isOverdue(issue, config) {
   const now = Date.now();
   if (['closed', 'cancelled'].includes(issue.status)) {
     return false;
   }
-  return now > issue.deadline;
+  const thresholdDays = (config && config.overdueThresholdDays) || 0;
+  const effectiveDeadline = issue.deadline + thresholdDays * 24 * 60 * 60 * 1000;
+  return now > effectiveDeadline;
 }
 
 function addTimelineEntry(issue, action, actionName, userId, userName, remark, extra = {}) {
@@ -366,9 +368,9 @@ app.get('/api/issues', (req, res) => {
   }
   
   if (overdue === '1') {
-    filtered = filtered.filter(i => isOverdue(i));
+    filtered = filtered.filter(i => isOverdue(i, config));
   } else if (overdue === '0') {
-    filtered = filtered.filter(i => !isOverdue(i));
+    filtered = filtered.filter(i => !isOverdue(i, config));
   }
   
   if (keyword) {
@@ -398,7 +400,7 @@ app.get('/api/issues', (req, res) => {
   
   const resultList = list.map(issue => ({
     ...issue,
-    isOverdue: isOverdue(issue),
+    isOverdue: isOverdue(issue, config),
     statusText: STATUS_MAP[issue.status] || issue.status
   }));
   
@@ -415,17 +417,27 @@ app.get('/api/issues', (req, res) => {
 
 app.get('/api/issues/:id', (req, res) => {
   const issues = readJSON(ISSUES_FILE, []);
+  const config = readJSON(CONFIG_FILE, { overdueThresholdDays: 3, warningThresholdDays: 1 });
   const issue = issues.find(i => i.id === req.params.id);
   
   if (!issue) {
     return res.json({ code: 404, message: '问题不存在' });
   }
   
+  const { currentUserId, currentUserRole } = req.query;
+  if (currentUserRole === 'store' && currentUserId) {
+    const users = readJSON(USERS_FILE, []);
+    const currentUser = users.find(u => u.id === currentUserId);
+    if (currentUser && currentUser.storeId && currentUser.storeId !== issue.storeId) {
+      return res.json({ code: 403, message: '无权查看其他门店的问题' });
+    }
+  }
+  
   res.json({ 
     code: 0, 
     data: {
       ...issue,
-      isOverdue: isOverdue(issue),
+      isOverdue: isOverdue(issue, config),
       statusText: STATUS_MAP[issue.status] || issue.status
     }
   });
@@ -502,6 +514,7 @@ app.post('/api/issues', (req, res) => {
 app.post('/api/issues/:id/accept', (req, res) => {
   const issues = readJSON(ISSUES_FILE, []);
   const users = readJSON(USERS_FILE, []);
+  const config = readJSON(CONFIG_FILE, { overdueThresholdDays: 3, warningThresholdDays: 1 });
   const index = issues.findIndex(i => i.id === req.params.id);
   
   if (index === -1) {
@@ -540,7 +553,7 @@ app.post('/api/issues/:id/accept', (req, res) => {
   
   res.json({ 
     code: 0, 
-    data: { ...issue, isOverdue: isOverdue(issue), statusText: STATUS_MAP[issue.status] },
+    data: { ...issue, isOverdue: isOverdue(issue, config), statusText: STATUS_MAP[issue.status] },
     message: '接单成功'
   });
 });
@@ -548,6 +561,7 @@ app.post('/api/issues/:id/accept', (req, res) => {
 app.post('/api/issues/:id/rectify', (req, res) => {
   const issues = readJSON(ISSUES_FILE, []);
   const users = readJSON(USERS_FILE, []);
+  const config = readJSON(CONFIG_FILE, { overdueThresholdDays: 3, warningThresholdDays: 1 });
   const index = issues.findIndex(i => i.id === req.params.id);
   
   if (index === -1) {
@@ -593,7 +607,7 @@ app.post('/api/issues/:id/rectify', (req, res) => {
   
   res.json({ 
     code: 0, 
-    data: { ...issue, isOverdue: isOverdue(issue), statusText: STATUS_MAP[issue.status] },
+    data: { ...issue, isOverdue: isOverdue(issue, config), statusText: STATUS_MAP[issue.status] },
     message: '整改提交成功，等待复验'
   });
 });
@@ -601,6 +615,7 @@ app.post('/api/issues/:id/rectify', (req, res) => {
 app.post('/api/issues/:id/recheck', (req, res) => {
   const issues = readJSON(ISSUES_FILE, []);
   const users = readJSON(USERS_FILE, []);
+  const config = readJSON(CONFIG_FILE, { overdueThresholdDays: 3, warningThresholdDays: 1 });
   const index = issues.findIndex(i => i.id === req.params.id);
   
   if (index === -1) {
@@ -653,7 +668,7 @@ app.post('/api/issues/:id/recheck', (req, res) => {
   
   res.json({ 
     code: 0, 
-    data: { ...issue, isOverdue: isOverdue(issue), statusText: STATUS_MAP[issue.status] },
+    data: { ...issue, isOverdue: isOverdue(issue, config), statusText: STATUS_MAP[issue.status] },
     message
   });
 });
@@ -661,6 +676,7 @@ app.post('/api/issues/:id/recheck', (req, res) => {
 app.post('/api/issues/:id/extension', (req, res) => {
   const issues = readJSON(ISSUES_FILE, []);
   const users = readJSON(USERS_FILE, []);
+  const config = readJSON(CONFIG_FILE, { overdueThresholdDays: 3, warningThresholdDays: 1 });
   const index = issues.findIndex(i => i.id === req.params.id);
   
   if (index === -1) {
@@ -718,7 +734,7 @@ app.post('/api/issues/:id/extension', (req, res) => {
   
   res.json({ 
     code: 0, 
-    data: { ...issue, isOverdue: isOverdue(issue), statusText: STATUS_MAP[issue.status] },
+    data: { ...issue, isOverdue: isOverdue(issue, config), statusText: STATUS_MAP[issue.status] },
     message: '延期申请已提交，等待审批'
   });
 });
@@ -726,6 +742,7 @@ app.post('/api/issues/:id/extension', (req, res) => {
 app.post('/api/issues/:id/extension/approve', (req, res) => {
   const issues = readJSON(ISSUES_FILE, []);
   const users = readJSON(USERS_FILE, []);
+  const config = readJSON(CONFIG_FILE, { overdueThresholdDays: 3, warningThresholdDays: 1 });
   const index = issues.findIndex(i => i.id === req.params.id);
   
   if (index === -1) {
@@ -771,7 +788,7 @@ app.post('/api/issues/:id/extension/approve', (req, res) => {
   
   res.json({ 
     code: 0, 
-    data: { ...issue, isOverdue: isOverdue(issue), statusText: STATUS_MAP[issue.status] },
+    data: { ...issue, isOverdue: isOverdue(issue, config), statusText: STATUS_MAP[issue.status] },
     message: '延期已批准'
   });
 });
@@ -779,6 +796,7 @@ app.post('/api/issues/:id/extension/approve', (req, res) => {
 app.post('/api/issues/:id/extension/reject', (req, res) => {
   const issues = readJSON(ISSUES_FILE, []);
   const users = readJSON(USERS_FILE, []);
+  const config = readJSON(CONFIG_FILE, { overdueThresholdDays: 3, warningThresholdDays: 1 });
   const index = issues.findIndex(i => i.id === req.params.id);
   
   if (index === -1) {
@@ -821,7 +839,7 @@ app.post('/api/issues/:id/extension/reject', (req, res) => {
   
   res.json({ 
     code: 0, 
-    data: { ...issue, isOverdue: isOverdue(issue), statusText: STATUS_MAP[issue.status] },
+    data: { ...issue, isOverdue: isOverdue(issue, config), statusText: STATUS_MAP[issue.status] },
     message: '延期已驳回'
   });
 });
@@ -850,7 +868,7 @@ app.get('/api/dashboard/stats', (req, res) => {
     rechecking: filtered.filter(i => i.status === 'rechecking').length,
     closed: filtered.filter(i => i.status === 'closed').length,
     rejected: filtered.filter(i => i.status === 'rejected').length,
-    overdue: filtered.filter(i => isOverdue(i)).length,
+    overdue: filtered.filter(i => isOverdue(i, config)).length,
     overdueRatio: 0
   };
   
@@ -867,7 +885,7 @@ app.get('/api/dashboard/stats', (req, res) => {
       pending: storeIssues.filter(i => i.status === 'pending').length,
       rectifying: storeIssues.filter(i => i.status === 'rectifying').length,
       closed: storeIssues.filter(i => i.status === 'closed').length,
-      overdue: storeIssues.filter(i => isOverdue(i)).length
+      overdue: storeIssues.filter(i => isOverdue(i, config)).length
     };
   });
   
@@ -895,6 +913,7 @@ app.get('/api/export/issues', (req, res) => {
   const issues = readJSON(ISSUES_FILE, []);
   const stores = readJSON(STORES_FILE, []);
   const users = readJSON(USERS_FILE, []);
+  const config = readJSON(CONFIG_FILE, { overdueThresholdDays: 3, warningThresholdDays: 1 });
   
   let { 
     storeId, status, overdue, keyword, 
@@ -919,9 +938,9 @@ app.get('/api/export/issues', (req, res) => {
   }
   
   if (overdue === '1') {
-    filtered = filtered.filter(i => isOverdue(i));
+    filtered = filtered.filter(i => isOverdue(i, config));
   } else if (overdue === '0') {
-    filtered = filtered.filter(i => !isOverdue(i));
+    filtered = filtered.filter(i => !isOverdue(i, config));
   }
   
   if (keyword) {
@@ -947,7 +966,7 @@ app.get('/api/export/issues', (req, res) => {
     `"${(issue.title || '').replace(/"/g, '""')}"`,
     issue.category || '',
     STATUS_MAP[issue.status] || issue.status,
-    isOverdue(issue) ? '是' : '否',
+    isOverdue(issue, config) ? '是' : '否',
     storeMap[issue.storeId] || issue.storeId,
     issue.responsibleName || '',
     issue.creatorName || '',

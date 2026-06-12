@@ -1,5 +1,125 @@
 [
   {
+    "id": "issue-1781286499283-5lvgc5sf4",
+    "title": "回归测试-专用问题",
+    "description": "超期阈值回归测试专用，测试后请删除",
+    "category": "其他",
+    "status": "pending",
+    "storeId": "s3",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "responsibleId": "u4",
+    "responsibleName": "赵店长",
+    "deadline": 1781200099281,
+    "createdAt": 1781286499283,
+    "updatedAt": 1781286499283,
+    "attachments": [],
+    "rectifyContent": "",
+    "rectifyAttachments": [],
+    "timeline": [
+      {
+        "id": "t-1781286499283-dio6n9veq",
+        "action": "created",
+        "actionName": "创建问题",
+        "userId": "u1",
+        "userName": "张督导",
+        "time": 1781286499283,
+        "remark": "超期阈值回归测试专用，测试后请删除"
+      }
+    ],
+    "extensionHistory": []
+  },
+  {
+    "id": "issue-1781286477008-gogvgw7kf",
+    "title": "reviewer-a02-1781286476985",
+    "description": "reviewer constructed threshold and permission case",
+    "category": "其他",
+    "status": "pending",
+    "storeId": "s3",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "responsibleId": "u4",
+    "responsibleName": "赵店长",
+    "deadline": 1781200076991,
+    "createdAt": 1781286477008,
+    "updatedAt": 1781286477008,
+    "attachments": [],
+    "rectifyContent": "",
+    "rectifyAttachments": [],
+    "timeline": [
+      {
+        "id": "t-1781286477008-3012lxu7u",
+        "action": "created",
+        "actionName": "创建问题",
+        "userId": "u1",
+        "userName": "张督导",
+        "time": 1781286477008,
+        "remark": "reviewer constructed threshold and permission case"
+      }
+    ],
+    "extensionHistory": []
+  },
+  {
+    "id": "issue-1781286248632-u3us81llg",
+    "title": "回归测试-专用问题",
+    "description": "超期阈值回归测试专用，测试后请删除",
+    "category": "其他",
+    "status": "pending",
+    "storeId": "s3",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "responsibleId": "u4",
+    "responsibleName": "赵店长",
+    "deadline": 1781199848629,
+    "createdAt": 1781286248632,
+    "updatedAt": 1781286248632,
+    "attachments": [],
+    "rectifyContent": "",
+    "rectifyAttachments": [],
+    "timeline": [
+      {
+        "id": "t-1781286248632-41qeo33b5",
+        "action": "created",
+        "actionName": "创建问题",
+        "userId": "u1",
+        "userName": "张督导",
+        "time": 1781286248632,
+        "remark": "超期阈值回归测试专用，测试后请删除"
+      }
+    ],
+    "extensionHistory": []
+  },
+  {
+    "id": "issue-1781286142335-qhbyofwzy",
+    "title": "回归测试-专用问题",
+    "description": "超期阈值回归测试专用，测试后请删除",
+    "category": "其他",
+    "status": "pending",
+    "storeId": "s3",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "responsibleId": "u4",
+    "responsibleName": "赵店长",
+    "deadline": 1781199742306,
+    "createdAt": 1781286142335,
+    "updatedAt": 1781286142335,
+    "attachments": [],
+    "rectifyContent": "",
+    "rectifyAttachments": [],
+    "timeline": [
+      {
+        "id": "t-1781286142335-y0vck0u3x",
+        "action": "created",
+        "actionName": "创建问题",
+        "userId": "u1",
+        "userName": "张督导",
+        "time": 1781286142335,
+        "remark": "超期阈值回归测试专用，测试后请删除"
+      }
+    ],
+    "extensionHistory": []
+  },
+  {
     "id": "issue-1781284002213-kuch3jbiq",
     "title": "货架陈列不规范",
     "description": "零食区货架陈列凌乱，价签缺失，影响顾客购物体验",
