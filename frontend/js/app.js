@@ -151,6 +151,11 @@ function updateUserDisplay() {
   createBtns.forEach(btn => {
     btn.style.display = isSupervisor ? 'inline-flex' : 'none';
   });
+
+  const importBtns = document.querySelectorAll('.btn-import');
+  importBtns.forEach(btn => {
+    btn.style.display = isSupervisor ? 'inline-flex' : 'none';
+  });
 }
 
 function refreshCurrentPage() {
@@ -504,6 +509,11 @@ function initCreateButtons() {
   const btns = document.querySelectorAll('.btn-create');
   btns.forEach(btn => {
     btn.addEventListener('click', openCreateModal);
+  });
+
+  const importBtns = document.querySelectorAll('.btn-import');
+  importBtns.forEach(btn => {
+    btn.addEventListener('click', openImportModal);
   });
 }
 

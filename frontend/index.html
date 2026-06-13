@@ -5,6 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>巡店问题闭环看板</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+.import-field-help { background: var(--gray-50, #f9fafb); padding: 12px; border-radius: 8px; font-size: 13px; line-height: 1.8; color: var(--gray-600, #4b5563); }
+.import-field-help p { margin: 0; }
+.import-sample { margin-top: 12px; }
+.import-sample-tabs { display: flex; gap: 8px; margin-bottom: 8px; }
+.sample-tab { padding: 6px 14px; border: 1px solid var(--border, #e5e7eb); background: white; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--gray-600, #4b5563); }
+.sample-tab.active { background: var(--primary, #2563eb); color: white; border-color: var(--primary, #2563eb); }
+.sample-code { background: var(--gray-50, #f9fafb); padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.6; overflow-x: auto; white-space: pre; font-family: 'Courier New', monospace; border: 1px solid var(--border, #e5e7eb); }
+.import-result-summary { display: flex; gap: 16px; margin-bottom: 16px; justify-content: center; }
+.import-result-stat { text-align: center; padding: 12px 20px; border-radius: 8px; min-width: 80px; }
+.import-result-number { display: block; font-size: 28px; font-weight: 700; }
+.import-result-label { display: block; font-size: 12px; margin-top: 4px; color: var(--gray-500, #6b7280); }
+.import-result-total { background: #eff6ff; color: #1d4ed8; }
+.import-result-success { background: #ecfdf5; color: #059669; }
+.import-result-failed { background: #fef2f2; color: #dc2626; }
+.import-result-skipped { background: #fffbeb; color: #d97706; }
+.import-batch-id { text-align: center; font-size: 12px; color: var(--gray-400, #9ca3af); margin-bottom: 16px; }
+.import-result-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.import-result-table th { background: var(--gray-50, #f9fafb); padding: 8px 12px; text-align: left; font-weight: 600; border-bottom: 1px solid var(--border, #e5e7eb); }
+.import-result-table td { padding: 8px 12px; border-bottom: 1px solid var(--border, #e5e7eb); }
+.import-status-success { color: #059669; font-weight: 500; }
+.import-status-failed { color: #dc2626; font-weight: 500; }
+.import-status-skipped { color: #d97706; font-weight: 500; }
+.btn-import { background: var(--info, #3b82f6); color: white; }
+.btn-import:hover { background: var(--primary-hover, #1d4ed8); }
+  </style>
 </head>
 <body>
   <div class="app">
@@ -180,6 +206,9 @@
             </div>
             <div class="filter-actions">
               <button class="btn btn-secondary" id="btnResetFilter">重置</button>
+              <button class="btn btn-import" id="btnImport">
+                <span>📤</span> 导入
+              </button>
               <button class="btn btn-export" id="btnExport">
                 <span>📥</span> 导出
               </button>

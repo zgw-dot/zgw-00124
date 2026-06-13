@@ -491,3 +491,171 @@ async function handleRejectExtension(issueId, extensionId) {
     showToast(res.message || '操作失败', 'error');
   }
 }
+
+function openImportModal() {
+  const user = getCurrentUser();
+  if (user.role !== 'supervisor') {
+    showToast('门店账号不能导入问题', 'error');
+    return;
+  }
+
+  const sampleCSV = `标题,分类,门店,截止时间,描述
+货架标签缺失,卫生,朝阳路店,2026-07-01,价签缺失需要补齐
+收银台排队过长,服务,海淀店,2026-07-15,高峰期排队超过15分钟`;
+
+  const sampleJSON = JSON.stringify([
+    { title: '货架标签缺失', category: '卫生', storeId: '朝阳路店', deadline: '2026-07-01', description: '价签缺失需要补齐' },
+    { title: '收银台排队过长', category: '服务', storeId: '海淀店', deadline: '2026-07-15', description: '高峰期排队超过15分钟' }
+  ], null, 2);
+
+  const bodyHtml = `
+    <form id="importForm">
+      <div class="form-group">
+        <label>导入格式 *</label>
+        <select id="importFormat">
+          <option value="csv">CSV</option>
+          <option value="json">JSON</option>
+        </select>
+        <p class="form-help">支持 CSV 和 JSON 两种格式</p>
+      </div>
+      <div class="form-group">
+        <label>上传文件</label>
+        <input type="file" id="importFile" accept=".csv,.json,.txt">
+        <p class="form-help">选择 .csv 或 .json 文件</p>
+      </div>
+      <div class="form-group">
+        <label>或直接粘贴数据 *</label>
+        <textarea id="importData" rows="8" placeholder="在此粘贴 CSV 或 JSON 数据..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>字段说明</label>
+        <div class="import-field-help">
+          <p><strong>必填字段：</strong>标题(title)、门店(storeId，可用门店名称如"朝阳路店")、截止时间(deadline，格式 YYYY-MM-DD)</p>
+          <p><strong>可选字段：</strong>分类(category，默认"其他")、描述(description)</p>
+          <p><strong>冲突规则：</strong>标题+门店+截止时间相同的记录会被跳过，不会覆盖已有数据</p>
+        </div>
+      </div>
+      <div class="import-sample">
+        <div class="import-sample-tabs">
+          <button type="button" class="sample-tab active" data-format="csv" onclick="switchSampleTab('csv')">CSV 示例</button>
+          <button type="button" class="sample-tab" data-format="json" onclick="switchSampleTab('json')">JSON 示例</button>
+        </div>
+        <pre class="sample-code" id="sampleCSV">${sampleCSV}</pre>
+        <pre class="sample-code" id="sampleJSON" style="display:none">${sampleJSON}</pre>
+      </div>
+    </form>
+  `;
+
+  const footerHtml = `
+    <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+    <button class="btn btn-primary" onclick="submitImport()">开始导入</button>
+  `;
+
+  openModal('批量导入问题', bodyHtml, footerHtml);
+
+  document.getElementById('importFile').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      document.getElementById('importData').value = ev.target.result;
+      if (file.name.endsWith('.json')) {
+        document.getElementById('importFormat').value = 'json';
+      } else {
+        document.getElementById('importFormat').value = 'csv';
+      }
+    };
+    reader.readAsText(file, 'utf-8');
+  });
+}
+
+function switchSampleTab(format) {
+  document.querySelectorAll('.sample-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.sample-tab[data-format="${format}"]`).classList.add('active');
+  document.getElementById('sampleCSV').style.display = format === 'csv' ? 'block' : 'none';
+  document.getElementById('sampleJSON').style.display = format === 'json' ? 'block' : 'none';
+}
+
+async function submitImport() {
+  const user = getCurrentUser();
+  if (user.role !== 'supervisor') {
+    showToast('门店账号不能导入问题', 'error');
+    return;
+  }
+
+  const format = document.getElementById('importFormat').value;
+  const data = document.getElementById('importData').value.trim();
+
+  if (!data) {
+    showToast('请输入或上传导入数据', 'error');
+    return;
+  }
+
+  const res = await api.importIssues(user.userId, format, data);
+
+  if (res.code === 0) {
+    showImportResult(res.data);
+    refreshCurrentPage();
+  } else {
+    showToast(res.message || '导入失败', 'error');
+  }
+}
+
+function showImportResult(result) {
+  const { batchId, totalCount, successCount, failedCount, skippedCount, results } = result;
+
+  const statusLabel = { success: '成功', failed: '失败', skipped: '跳过' };
+  const statusClass = { success: 'import-status-success', failed: 'import-status-failed', skipped: 'import-status-skipped' };
+
+  const resultRows = results.map((r, i) => `
+    <tr>
+      <td>${r.index !== undefined ? r.index + 1 : i + 1}</td>
+      <td><span class="${statusClass[r.status] || ''}">${statusLabel[r.status] || r.status}</span></td>
+      <td>${r.reason || '-'}</td>
+      <td>${r.issueId || '-'}</td>
+    </tr>
+  `).join('');
+
+  const bodyHtml = `
+    <div class="import-result-summary">
+      <div class="import-result-stat import-result-total">
+        <span class="import-result-number">${totalCount}</span>
+        <span class="import-result-label">总计</span>
+      </div>
+      <div class="import-result-stat import-result-success">
+        <span class="import-result-number">${successCount}</span>
+        <span class="import-result-label">成功</span>
+      </div>
+      <div class="import-result-stat import-result-failed">
+        <span class="import-result-number">${failedCount}</span>
+        <span class="import-result-label">失败</span>
+      </div>
+      <div class="import-result-stat import-result-skipped">
+        <span class="import-result-number">${skippedCount}</span>
+        <span class="import-result-label">跳过</span>
+      </div>
+    </div>
+    <div class="import-batch-id">批次ID：${batchId}</div>
+    <div class="import-result-detail">
+      <table class="import-result-table">
+        <thead>
+          <tr>
+            <th>行号</th>
+            <th>状态</th>
+            <th>原因</th>
+            <th>问题ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${resultRows}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  const footerHtml = `
+    <button class="btn btn-secondary" onclick="closeModal()">关闭</button>
+  `;
+
+  openModal('导入结果', bodyHtml, footerHtml);
+}

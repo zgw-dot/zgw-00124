@@ -213,12 +213,213 @@ async function section(title, fn) {
       const exp = await request('GET',
         `/api/export/issues?currentUserId=u1&currentUserRole=supervisor`);
       const csv = exp.raw || '';
-      // 找测试问题所在行，看「是否逾期」列
       const lines = csv.split('\n');
       const testLine = lines.find(l => l.includes(testIssue.id));
       assert(testLine && testLine.includes(',否,'),
         '[阈值=10] 导出 CSV 中测试问题的「是否逾期」= 否',
         testLine ? `匹配行内容: ${testLine}` : 'CSV 中没找到测试问题');
+    });
+
+    // ================================================================
+    // 批量导入：门店账号权限拦截
+    // ================================================================
+    await section('批量导入：门店账号权限拦截', async () => {
+      const r1 = await request('POST', '/api/issues/import', {
+        creatorId: 'u2',
+        format: 'json',
+        data: JSON.stringify([{ title: 'test', storeId: 's1', deadline: '2026-07-01' }])
+      });
+      assert(r1.body.code === 403,
+        '门店账号(u2)调用导入接口 → 返回 403',
+        `实际 code=${r1.body.code} msg=${r1.body.message}`);
+
+      const r2 = await request('POST', '/api/issues/import', {
+        creatorId: 'u3',
+        format: 'json',
+        data: JSON.stringify([{ title: 'test', storeId: 's2', deadline: '2026-07-01' }])
+      });
+      assert(r2.body.code === 403,
+        '门店账号(u3)调用导入接口 → 返回 403',
+        `实际 code=${r2.body.code}`);
+    });
+
+    // ================================================================
+    // 批量导入：正常导入 + 冲突跳过
+    // ================================================================
+    await section('批量导入：正常导入与冲突跳过', async () => {
+      const futureDeadline = '2026-08-15';
+      const importData = [
+        { title: '导入测试-问题A', storeId: 's1', deadline: futureDeadline, category: '安全', description: '导入测试A' },
+        { title: '导入测试-问题B', storeId: 's2', deadline: futureDeadline, category: '服务', description: '导入测试B' }
+      ];
+
+      const r1 = await request('POST', '/api/issues/import', {
+        creatorId: 'u1',
+        format: 'json',
+        data: JSON.stringify(importData)
+      });
+      assert(r1.body.code === 0,
+        '督导批量导入2条问题 → code=0',
+        `实际 code=${r1.body.code}`);
+      assert(r1.body.data.successCount === 2,
+        '成功数量 = 2',
+        `实际 successCount=${r1.body.data.successCount}`);
+      assert(r1.body.data.failedCount === 0,
+        '失败数量 = 0',
+        `实际 failedCount=${r1.body.data.failedCount}`);
+      assert(r1.body.data.skippedCount === 0,
+        '跳过数量 = 0',
+        `实际 skippedCount=${r1.body.data.skippedCount}`);
+      assert(r1.body.data.batchId && r1.body.data.batchId.startsWith('import-'),
+        '返回批次ID，以 import- 开头',
+        `实际 batchId=${r1.body.data.batchId}`);
+
+      const batchId1 = r1.body.data.batchId;
+
+      const r2 = await request('POST', '/api/issues/import', {
+        creatorId: 'u1',
+        format: 'json',
+        data: JSON.stringify(importData)
+      });
+      assert(r2.body.code === 0,
+        '重复导入相同数据 → code=0',
+        `实际 code=${r2.body.code}`);
+      assert(r2.body.data.skippedCount === 2,
+        '冲突跳过数量 = 2',
+        `实际 skippedCount=${r2.body.data.skippedCount}`);
+      assert(r2.body.data.successCount === 0,
+        '重复导入成功数量 = 0',
+        `实际 successCount=${r2.body.data.successCount}`);
+      const skipResult = r2.body.data.results.find(r => r.status === 'skipped');
+      assert(skipResult && skipResult.reason === '标题+门店+截止时间重复',
+        '跳过原因为"标题+门店+截止时间重复"',
+        `实际 reason=${skipResult && skipResult.reason}`);
+
+      const detail = await request('GET',
+        `/api/issues/${r1.body.data.results[0].issueId}?currentUserId=u1&currentUserRole=supervisor`);
+      assert(detail.body.code === 0 && detail.body.data.importBatchId === batchId1,
+        '导入的问题包含 importBatchId 字段',
+        `实际 importBatchId=${detail.body.data && detail.body.data.importBatchId}`);
+      assert(detail.body.data.importSource === 'batch_import',
+        '导入的问题 importSource = batch_import',
+        `实际 importSource=${detail.body.data && detail.body.data.importSource}`);
+
+      const hasImportedTimeline = detail.body.data.timeline.some(t => t.action === 'imported');
+      assert(hasImportedTimeline,
+        '导入问题的时间线包含 imported 操作',
+        '');
+    });
+
+    // ================================================================
+    // 批量导入：部分失败
+    // ================================================================
+    await section('批量导入：部分失败', async () => {
+      const mixedData = [
+        { title: '部分失败-成功', storeId: 's1', deadline: '2026-09-01', description: '应该成功' },
+        { title: '', storeId: 's1', deadline: '2026-09-01', description: '缺标题应失败' },
+        { title: '部分失败-缺门店', storeId: '', deadline: '2026-09-01', description: '缺门店应失败' },
+        { title: '部分失败-缺截止', storeId: 's1', deadline: '', description: '缺截止时间应失败' },
+        { title: '部分失败-无效门店', storeId: '不存在的店', deadline: '2026-09-01', description: '门店不存在应失败' }
+      ];
+
+      const r1 = await request('POST', '/api/issues/import', {
+        creatorId: 'u1',
+        format: 'json',
+        data: JSON.stringify(mixedData)
+      });
+      assert(r1.body.code === 0,
+        '混合数据导入 → code=0',
+        `实际 code=${r1.body.code}`);
+      assert(r1.body.data.successCount === 1,
+        '成功数量 = 1',
+        `实际 successCount=${r1.body.data.successCount}`);
+      assert(r1.body.data.failedCount === 4,
+        '失败数量 = 4',
+        `实际 failedCount=${r1.body.data.failedCount}`);
+    });
+
+    // ================================================================
+    // 批量导入：CSV 格式
+    // ================================================================
+    await section('批量导入：CSV 格式支持', async () => {
+      const csvData = `标题,分类,门店,截止时间,描述
+CSV导入测试1,安全,朝阳路店,2026-10-01,通过门店名解析
+CSV导入测试2,服务,s2,2026-10-02,通过门店ID导入`;
+
+      const r1 = await request('POST', '/api/issues/import', {
+        creatorId: 'u1',
+        format: 'csv',
+        data: csvData
+      });
+      assert(r1.body.code === 0,
+        'CSV格式导入 → code=0',
+        `实际 code=${r1.body.code}`);
+      assert(r1.body.data.successCount === 2,
+        'CSV导入成功数量 = 2',
+        `实际 successCount=${r1.body.data.successCount}`);
+
+      const detail1 = await request('GET',
+        `/api/issues/${r1.body.data.results[0].issueId}?currentUserId=u1&currentUserRole=supervisor`);
+      assert(detail1.body.data.storeId === 's1',
+        'CSV"朝阳路店"解析为 storeId=s1',
+        `实际 storeId=${detail1.body.data && detail1.body.data.storeId}`);
+      assert(detail1.body.data.category === '安全',
+        'CSV分类字段正确映射为"安全"',
+        `实际 category=${detail1.body.data && detail1.body.data.category}`);
+    });
+
+    // ================================================================
+    // 导入记录持久化：导入后可查询
+    // ================================================================
+    await section('导入记录持久化与查询', async () => {
+      const r1 = await request('GET', '/api/imports');
+      assert(r1.body.code === 0 && r1.body.data.list.length > 0,
+        'GET /api/imports 返回导入记录列表',
+        `实际 list.length=${r1.body.data && r1.body.data.list.length}`);
+
+      const firstRecord = r1.body.data.list[0];
+      assert(firstRecord.id && firstRecord.creatorName && firstRecord.createdAt,
+        '导入记录包含 id, creatorName, createdAt',
+        '');
+
+      const r2 = await request('GET', `/api/imports/${firstRecord.id}`);
+      assert(r2.body.code === 0 && r2.body.data.id === firstRecord.id,
+        'GET /api/imports/:id 返回单条记录',
+        `实际 code=${r2.body.code}`);
+      assert(r2.body.data.results && Array.isArray(r2.body.data.results),
+        '导入记录详情包含 results 数组',
+        '');
+
+      const r3 = await request('GET', '/api/imports/999-nonexistent');
+      assert(r3.body.code === 404,
+        '查询不存在的导入记录 → 404',
+        `实际 code=${r3.body.code}`);
+    });
+
+    // ================================================================
+    // 导出 CSV 包含导入批次和来源字段
+    // ================================================================
+    await section('导出 CSV 包含导入批次和来源字段', async () => {
+      const exp = await request('GET',
+        `/api/export/issues?currentUserId=u1&currentUserRole=supervisor`);
+      const csv = exp.raw || '';
+      const headerLine = csv.split('\n')[0];
+      assert(headerLine.includes('导入批次ID'),
+        'CSV 表头包含"导入批次ID"列',
+        `实际表头: ${headerLine}`);
+      assert(headerLine.includes('导入来源'),
+        'CSV 表头包含"导入来源"列',
+        `实际表头: ${headerLine}`);
+
+      const importIssueLine = csv.split('\n').find(l => l.includes('导入测试-问题A'));
+      assert(importIssueLine && importIssueLine.includes('batch_import'),
+        '导入问题的行包含 batch_import 来源标记',
+        importIssueLine ? '找到行但无标记' : '未找到行');
+
+      const manualLine = csv.split('\n').find(l => l.includes('回归测试-专用问题'));
+      assert(manualLine && manualLine.includes('manual'),
+        '手动创建的问题行包含 manual 来源标记',
+        manualLine ? '找到行但无标记' : '未找到行');
     });
 
   } catch (err) {

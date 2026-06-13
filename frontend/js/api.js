@@ -125,5 +125,20 @@ const api = {
       }
     });
     return `${API_BASE}/export/issues?${query.toString()}`;
+  },
+
+  importIssues(creatorId, format, data) {
+    return this.request('/issues/import', {
+      method: 'POST',
+      body: JSON.stringify({ creatorId, format, data })
+    });
+  },
+
+  getImports(page = 1, pageSize = 20) {
+    return this.request(`/imports?page=${page}&pageSize=${pageSize}`);
+  },
+
+  getImportDetail(id) {
+    return this.request(`/imports/${id}`);
   }
 };
