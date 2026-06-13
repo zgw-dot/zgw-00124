@@ -223,5 +223,311 @@
       }
     ],
     "createdAt": 1781338152363
+  },
+  {
+    "id": "import-1781340619022-8iiet81hj",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "format": "json",
+    "totalCount": 2,
+    "successCount": 2,
+    "failedCount": 0,
+    "skippedCount": 0,
+    "results": [
+      {
+        "index": 0,
+        "status": "success",
+        "issueId": "issue-1781340619022-wp7gke5pj"
+      },
+      {
+        "index": 1,
+        "status": "success",
+        "issueId": "issue-1781340619023-1337z9b25"
+      }
+    ],
+    "createdAt": 1781340619023
+  },
+  {
+    "id": "import-1781340619031-4m0u3pcq9",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "format": "json",
+    "totalCount": 2,
+    "successCount": 0,
+    "failedCount": 0,
+    "skippedCount": 2,
+    "results": [
+      {
+        "index": 0,
+        "status": "skipped",
+        "reason": "标题+门店+截止时间重复"
+      },
+      {
+        "index": 1,
+        "status": "skipped",
+        "reason": "标题+门店+截止时间重复"
+      }
+    ],
+    "createdAt": 1781340619031
+  },
+  {
+    "id": "import-1781340619048-fuee94ezt",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "format": "json",
+    "totalCount": 5,
+    "successCount": 1,
+    "failedCount": 4,
+    "skippedCount": 0,
+    "results": [
+      {
+        "index": 0,
+        "status": "success",
+        "issueId": "issue-1781340619048-7pqrnz1d2"
+      },
+      {
+        "index": 1,
+        "status": "failed",
+        "reason": "缺少必填字段(title)"
+      },
+      {
+        "index": 2,
+        "status": "failed",
+        "reason": "缺少必填字段(storeId)"
+      },
+      {
+        "index": 3,
+        "status": "failed",
+        "reason": "缺少必填字段(deadline)"
+      },
+      {
+        "index": 4,
+        "status": "failed",
+        "reason": "门店不存在"
+      }
+    ],
+    "createdAt": 1781340619048
+  },
+  {
+    "id": "import-1781340619059-isnibx8gt",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "format": "csv",
+    "totalCount": 2,
+    "successCount": 2,
+    "failedCount": 0,
+    "skippedCount": 0,
+    "results": [
+      {
+        "index": 0,
+        "status": "success",
+        "issueId": "issue-1781340619061-km7k89clk"
+      },
+      {
+        "index": 1,
+        "status": "success",
+        "issueId": "issue-1781340619061-sxlf34cj5"
+      }
+    ],
+    "createdAt": 1781340619061
+  },
+  {
+    "id": "import-1781340705445-y8pzxe93b",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "format": "json",
+    "totalCount": 2,
+    "successCount": 2,
+    "failedCount": 0,
+    "skippedCount": 0,
+    "results": [
+      {
+        "index": 0,
+        "status": "success",
+        "issueId": "issue-1781340705446-7guh53wyn"
+      },
+      {
+        "index": 1,
+        "status": "success",
+        "issueId": "issue-1781340705446-q11648uu3"
+      }
+    ],
+    "createdAt": 1781340705446
+  },
+  {
+    "id": "import-1781340705453-wj7fg8x2d",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "format": "json",
+    "totalCount": 2,
+    "successCount": 0,
+    "failedCount": 0,
+    "skippedCount": 2,
+    "results": [
+      {
+        "index": 0,
+        "status": "skipped",
+        "reason": "标题+门店+截止时间重复"
+      },
+      {
+        "index": 1,
+        "status": "skipped",
+        "reason": "标题+门店+截止时间重复"
+      }
+    ],
+    "createdAt": 1781340705453
+  },
+  {
+    "id": "import-1781340705463-836iskyri",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "format": "json",
+    "totalCount": 5,
+    "successCount": 1,
+    "failedCount": 4,
+    "skippedCount": 0,
+    "results": [
+      {
+        "index": 0,
+        "status": "success",
+        "issueId": "issue-1781340705463-34js2ngux"
+      },
+      {
+        "index": 1,
+        "status": "failed",
+        "reason": "缺少必填字段(title)"
+      },
+      {
+        "index": 2,
+        "status": "failed",
+        "reason": "缺少必填字段(storeId)"
+      },
+      {
+        "index": 3,
+        "status": "failed",
+        "reason": "缺少必填字段(deadline)"
+      },
+      {
+        "index": 4,
+        "status": "failed",
+        "reason": "门店不存在"
+      }
+    ],
+    "createdAt": 1781340705463
+  },
+  {
+    "id": "import-1781340705475-no1lrk2sh",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "format": "csv",
+    "totalCount": 2,
+    "successCount": 2,
+    "failedCount": 0,
+    "skippedCount": 0,
+    "results": [
+      {
+        "index": 0,
+        "status": "success",
+        "issueId": "issue-1781340705475-nzgzlpmsh"
+      },
+      {
+        "index": 1,
+        "status": "success",
+        "issueId": "issue-1781340705475-0pzbxldpt"
+      }
+    ],
+    "createdAt": 1781340705475
+  },
+  {
+    "id": "import-1781341307075-kybcrk0aw",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "format": "json",
+    "totalCount": 2,
+    "successCount": 0,
+    "failedCount": 0,
+    "skippedCount": 2,
+    "results": [
+      {
+        "index": 0,
+        "status": "skipped",
+        "reason": "标题+门店+截止时间重复"
+      },
+      {
+        "index": 1,
+        "status": "skipped",
+        "reason": "标题+门店+截止时间重复"
+      }
+    ],
+    "createdAt": 1781341307084
+  },
+  {
+    "id": "import-1781341307096-2s48hmc9i",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "format": "json",
+    "totalCount": 2,
+    "successCount": 0,
+    "failedCount": 0,
+    "skippedCount": 2,
+    "results": [
+      {
+        "index": 0,
+        "status": "skipped",
+        "reason": "标题+门店+截止时间重复"
+      },
+      {
+        "index": 1,
+        "status": "skipped",
+        "reason": "标题+门店+截止时间重复"
+      }
+    ],
+    "createdAt": 1781341307096
+  },
+  {
+    "id": "import-1781341324793-qah4c0fpt",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "format": "json",
+    "totalCount": 2,
+    "successCount": 0,
+    "failedCount": 0,
+    "skippedCount": 2,
+    "results": [
+      {
+        "index": 0,
+        "status": "skipped",
+        "reason": "标题+门店+截止时间重复"
+      },
+      {
+        "index": 1,
+        "status": "skipped",
+        "reason": "标题+门店+截止时间重复"
+      }
+    ],
+    "createdAt": 1781341324794
+  },
+  {
+    "id": "import-1781341324797-yfdf3h892",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "format": "json",
+    "totalCount": 2,
+    "successCount": 0,
+    "failedCount": 0,
+    "skippedCount": 2,
+    "results": [
+      {
+        "index": 0,
+        "status": "skipped",
+        "reason": "标题+门店+截止时间重复"
+      },
+      {
+        "index": 1,
+        "status": "skipped",
+        "reason": "标题+门店+截止时间重复"
+      }
+    ],
+    "createdAt": 1781341324798
   }
 ]
