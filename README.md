@@ -329,3 +329,220 @@ zgw-00124/
 - 消防通道堆放杂物（朝阳路店，待接单）
 - 员工仪容仪表不规范（海淀店，整改中）
 - 冷藏柜温度不达标（西城店，待复验，含延期记录）
+
+---
+
+## 批量导入链路架构说明
+
+### 后端模块拆分
+
+批量导入逻辑从 `server.js` 单文件拆分为 6 个独立模块 + 路由层：
+
+| 模块文件 | 职责 | 主要函数 |
+|---|---|---|
+| `csvParser.js` | CSV/JSON 解析 | `parseCSV()` / `parseJSON()` / `parseByFormat()` |
+| `fieldNormalizer.js` | 字段归一（中英文别名映射） | `normalizeFieldKey()` / `normalizeItems()` |
+| `storeResolver.js` | 门店解析（ID或名称→storeId，门店用户匹配） | `resolveStoreId()` / `findStoreUser()` |
+| `validator.js` | 单行校验（必填字段、截止时间解析） | `validateRequiredFields()` / `parseDeadline()` |
+| `conflictDetector.js` | 冲突判断（标题+门店+截止时间 去重） | `checkConflict()` |
+| `importService.js` | 主流程编排 + 数据构造 | `processImport()` / `buildIssue()` / `buildImportRecord()` / `listImportRecords()` |
+| `server.js`（路由层） | 取参、鉴权、调用服务、返回响应 | `POST /api/issues/import` / `GET /api/imports` / `GET /api/imports/:id` |
+
+### 路由层约束
+
+`server.js` 的导入路由只做 4 件事：
+1. 取参数：`creatorId` / `format` / `data`
+2. 鉴权：校验用户存在且是督导（门店账号 403 拦截）
+3. 调用 `importService.processImport()` 执行业务
+4. 写入 issues.json 和 imports.json，返回响应
+
+### 前端拆分
+
+`frontend/js/modal.js` 中的导入弹窗与结果渲染拆分为独立函数，保留 DOM id、按钮行为和文案：
+
+| 函数 | 职责 |
+|---|---|
+| `renderImportModalBody()` | 构造导入弹窗 body 模板（含格式选择、文件上传、示例代码） |
+| `renderImportModalFooter()` | 构造导入弹窗 footer 模板（取消/开始导入） |
+| `setupImportFileHandler()` | 绑定文件 change 事件（读取内容、自动识别格式） |
+| `renderImportResultSummary()` | 渲染 4 格统计（总计/成功/失败/跳过） |
+| `renderImportResultRows()` | 渲染每行的行号/状态/原因/问题ID |
+| `renderImportResultBody()` | 组装完整结果页（统计+批次ID+明细表） |
+| `renderImportResultFooter()` | 结果弹窗 footer（关闭按钮） |
+| `openImportModal()` / `submitImport()` / `showImportResult()` | 流程入口，调用上述渲染函数 |
+
+---
+
+## 重构测试运行方式
+
+### 测试分层
+
+```
+tests/
+├── import-unit.js   # 单元测试（直接 require 各模块，不启动服务，约 40 个断言）
+└── regression.js    # 回归测试（真实 HTTP 请求，全流程覆盖，约 44 个断言）
+```
+
+### 命令
+
+```bash
+cd backend
+
+# 1) 导入链路单元测试（独立验证各模块，无需启动服务）
+npm run test:unit
+
+# 2) 启动服务（另开终端或后台运行）
+npm start
+
+# 3) 回归测试（真实接口调用，覆盖所有场景）
+npm test
+```
+
+### 预期结果
+
+**`npm run test:unit`（单元测试）预期全部通过：**
+- CSV 解析：基础解析、BOM 头、引号字段、空 CSV
+- JSON 解析：数组解析、非数组抛错
+- 字段归一：中文/英文别名映射、未知字段原样保留
+- 门店解析：ID/名称两种方式、空/不存在/无门店用户 3 种失败
+- 字段校验：4 种必填字段缺失组合、截止时间数字/字符串/无效值
+- 冲突判断：完全相同/三要素任意一个不同 的组合
+- 数据构造：buildIssue 默认分类、buildTimelineEntry imported 动作、buildImportRecord 统计
+- processImport 主流程：JSON 全成功、CSV 门店名解析、1成功2失败1跳过混合、重复导入全跳过
+- 导入记录查询：分页倒序、按 id 查单条
+
+**`npm test`（回归测试）预期全部通过（44/44）：**
+- ✅ 门店账号调用 `/api/issues/import` → HTTP 403 `门店账号不能导入问题`
+- ✅ 督导账号 JSON 导入 2 条 → `successCount=2, failedCount=0, skippedCount=0`
+- ✅ 重复导入相同 2 条 → `skippedCount=2，原因: 标题+门店+截止时间重复`
+- ✅ 导入问题含 `importBatchId` 和 `importSource='batch_import'`，时间线有 `imported` 动作
+- ✅ 混合数据 5 条（1 成功 4 失败：缺标题/缺门店/缺截止/无效门店）
+- ✅ CSV 格式导入：中文"朝阳路店"解析为 storeId=s1，分类映射正确
+- ✅ 导入记录写入 imports.json，重启后 `/api/imports` 可查
+- ✅ 导出 CSV 表头含"导入批次ID""导入来源"，导入问题行含 `batch_import`
+
+---
+
+## 真实接口调用示例
+
+### 1. 门店账号被拦（curl）
+
+```bash
+curl -X POST http://localhost:3000/api/issues/import \
+  -H "Content-Type: application/json" \
+  -d '{
+    "creatorId": "u2",
+    "format": "json",
+    "data": "[{\"title\":\"门店无权导入\",\"storeId\":\"s1\",\"deadline\":\"2026-12-01\"}]"
+  }'
+```
+
+**预期响应：**
+```json
+{ "code": 403, "message": "门店账号不能导入问题" }
+```
+
+### 2. CSV 格式导入（curl）
+
+```bash
+curl -X POST http://localhost:3000/api/issues/import \
+  -H "Content-Type: application/json" \
+  -d '{
+    "creatorId": "u1",
+    "format": "csv",
+    "data": "标题,分类,门店,截止时间,描述\ncurl测试1,安全,朝阳路店,2026-11-01,来自curl的CSV导入\ncurl测试2,服务,s2,2026-11-02,通过门店ID导入"
+  }'
+```
+
+**预期响应（200 OK）：**
+```json
+{
+  "code": 0,
+  "data": {
+    "batchId": "import-...",
+    "totalCount": 2,
+    "successCount": 2,
+    "failedCount": 0,
+    "skippedCount": 0,
+    "results": [
+      { "index": 0, "status": "success", "issueId": "issue-..." },
+      { "index": 1, "status": "success", "issueId": "issue-..." }
+    ]
+  }
+}
+```
+
+### 3. 成功/失败/跳过明细（Python requests）
+
+```python
+import requests
+import json
+
+base = 'http://localhost:3000/api'
+
+# 构造混合数据：1成功 / 1失败(缺标题) / 1跳过(与已存在冲突)
+payload = {
+    "creatorId": "u1",
+    "format": "json",
+    "data": json.dumps([
+        {"title": "python-全新问题", "storeId": "s1", "deadline": "2026-10-10", "category": "质量"},
+        {"title": "", "storeId": "s1", "deadline": "2026-10-10"},
+        {"title": "curl测试1", "storeId": "朝阳路店", "deadline": "2026-11-01"}
+    ])
+}
+
+r = requests.post(f'{base}/issues/import', json=payload)
+data = r.json()['data']
+print(f'总计={data["totalCount"]} 成功={data["successCount"]} '
+      f'失败={data["failedCount"]} 跳过={data["skippedCount"]}')
+
+for row in data['results']:
+    print(f'  第{row["index"]+1}行 status={row["status"]:7s} reason={row.get("reason","-"):20s} issueId={row.get("issueId","-")}')
+```
+
+**预期输出：**
+```
+总计=3 成功=1 失败=1 跳过=1
+  第1行 status=success reason=-                    issueId=issue-...
+  第2行 status=failed  reason=缺少必填字段(title/storeId/deadline) issueId=-
+  第3行 status=skipped reason=标题+门店+截止时间重复   issueId=-
+```
+
+### 4. 导入记录重启后可查
+
+```bash
+# 1) 先停掉服务
+# Ctrl+C
+
+# 2) 重新启动
+cd backend
+npm start
+
+# 3) 查询导入记录
+curl http://localhost:3000/api/imports?pageSize=5
+```
+
+**预期：之前所有导入批次仍在列表中，按时间倒序；取任意 batchId：**
+```bash
+curl http://localhost:3000/api/imports/<batchId>
+# 返回包含 successCount/failedCount/skippedCount/results 明细
+```
+
+### 5. 导出 CSV 含导入批次和来源
+
+```bash
+# 导出全量
+curl -o issues.csv "http://localhost:3000/api/export/issues?currentUserId=u1&currentUserRole=supervisor"
+
+# 检查表头（Windows PowerShell）
+Get-Content issues.csv -Encoding UTF8 | Select-Object -First 1
+# 预期包含：导入批次ID,导入来源
+
+# 检查某导入问题行
+Select-String -Path issues.csv -Pattern "curl测试1"
+# 预期行中包含 batch_import 字样
+
+# 检查手动创建的问题（回归测试专用问题）
+Select-String -Path issues.csv -Pattern "回归测试-专用问题"
+# 预期行中包含 manual 字样
+```

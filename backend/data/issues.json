@@ -1,5 +1,101 @@
 [
   {
+    "id": "issue-1781338152346-mjeb96r7v",
+    "title": "复核重复链路-1781338151831",
+    "description": "reviewer duplicate chain",
+    "category": "服务",
+    "status": "pending",
+    "storeId": "s2",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "responsibleId": "u3",
+    "responsibleName": "李店长",
+    "deadline": 1798588800000,
+    "createdAt": 1781338152346,
+    "updatedAt": 1781338152346,
+    "attachments": [],
+    "rectifyContent": "",
+    "rectifyAttachments": [],
+    "timeline": [
+      {
+        "id": "t-1781338152346-bpsd6jnb7",
+        "action": "imported",
+        "actionName": "批量导入",
+        "userId": "u1",
+        "userName": "张督导",
+        "time": 1781338152346,
+        "remark": "批量导入问题"
+      }
+    ],
+    "extensionHistory": [],
+    "importBatchId": "import-1781338152345-rqx0c8w4y",
+    "importSource": "batch_import"
+  },
+  {
+    "id": "issue-1781338132655-c3izbbwc4",
+    "title": "复核自测成功-1781338131926",
+    "description": "reviewer generated",
+    "category": "安全",
+    "status": "pending",
+    "storeId": "s1",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "responsibleId": "u2",
+    "responsibleName": "王店长",
+    "deadline": 1798675200000,
+    "createdAt": 1781338132655,
+    "updatedAt": 1781338132655,
+    "attachments": [],
+    "rectifyContent": "",
+    "rectifyAttachments": [],
+    "timeline": [
+      {
+        "id": "t-1781338132655-f0zgfl6lf",
+        "action": "imported",
+        "actionName": "批量导入",
+        "userId": "u1",
+        "userName": "张督导",
+        "time": 1781338132655,
+        "remark": "批量导入问题"
+      }
+    ],
+    "extensionHistory": [],
+    "importBatchId": "import-1781338132655-fr69lkplr",
+    "importSource": "batch_import"
+  },
+  {
+    "id": "issue-1781338099953-nu5o6m40b",
+    "title": "回归测试-专用问题",
+    "description": "超期阈值回归测试专用，测试后请删除",
+    "category": "其他",
+    "status": "pending",
+    "storeId": "s3",
+    "creatorId": "u1",
+    "creatorName": "张督导",
+    "responsibleId": "u4",
+    "responsibleName": "赵店长",
+    "deadline": 1781251699947,
+    "createdAt": 1781338099953,
+    "updatedAt": 1781338099953,
+    "attachments": [],
+    "rectifyContent": "",
+    "rectifyAttachments": [],
+    "timeline": [
+      {
+        "id": "t-1781338099953-5jmhslmtr",
+        "action": "created",
+        "actionName": "创建问题",
+        "userId": "u1",
+        "userName": "张督导",
+        "time": 1781338099953,
+        "remark": "超期阈值回归测试专用，测试后请删除"
+      }
+    ],
+    "extensionHistory": [],
+    "importBatchId": "",
+    "importSource": "manual"
+  },
+  {
     "id": "issue-1781336187793-p4jgkxh2w",
     "title": "CSV导入测试2",
     "description": "通过门店ID导入",
