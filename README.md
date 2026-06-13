@@ -234,13 +234,23 @@ npm start
 ```
 zgw-00124/
 ├── backend/
-│   ├── server.js          # 后端服务主文件
+│   ├── server.js          # 后端服务主文件（路由层：取参、鉴权、返回）
+│   ├── csvParser.js       # CSV/JSON 解析模块
+│   ├── fieldNormalizer.js # 字段归一化模块（中英文别名映射）
+│   ├── storeResolver.js   # 门店解析模块（门店ID/名称→storeId，查找门店用户）
+│   ├── validator.js       # 单行校验模块（必填字段、截止时间解析）
+│   ├── conflictDetector.js# 冲突判断模块（标题+门店+截止时间去重）
+│   ├── importService.js   # 导入主服务（记录构造、问题写入、全流程编排）
 │   ├── package.json       # 依赖配置
 │   ├── data/              # 数据存储目录
 │   │   ├── users.json     # 用户数据
 │   │   ├── stores.json    # 门店数据
 │   │   ├── issues.json    # 问题数据
-│   │   └── config.json    # 系统配置
+│   │   ├── config.json    # 系统配置
+│   │   └── imports.json   # 导入记录（持久化，重启可查）
+│   ├── tests/
+│   │   ├── regression.js  # 回归测试（真实 HTTP 接口，全流程覆盖）
+│   │   └── import-unit.js # 导入链路单元测试（各模块独立断言）
 │   └── mock/              # 模拟资源目录
 │       └── images/        # 模拟图片
 ├── frontend/
@@ -248,9 +258,9 @@ zgw-00124/
 │   ├── css/
 │   │   └── style.css      # 样式文件（响应式）
 │   └── js/
-│       ├── api.js         # API 封装
+│       ├── api.js         # API 封装（importIssues / getImports 等）
 │       ├── app.js         # 主应用逻辑
-│       └── modal.js       # 弹窗逻辑
+│       └── modal.js       # 弹窗逻辑（导入弹窗、结果渲染拆分独立函数）
 └── README.md              # 说明文档
 ```
 

@@ -1,38 +1,6 @@
 [
   {
-    "id": "issue-1781332963075-5hargjj86",
-    "title": "浏览器测试-问题1",
-    "description": "浏览器端导入测试",
-    "category": "安全",
-    "status": "pending",
-    "storeId": "s1",
-    "creatorId": "u1",
-    "creatorName": "张督导",
-    "responsibleId": "u2",
-    "responsibleName": "王店长",
-    "deadline": 1796083200000,
-    "createdAt": 1781332963075,
-    "updatedAt": 1781332963075,
-    "attachments": [],
-    "rectifyContent": "",
-    "rectifyAttachments": [],
-    "timeline": [
-      {
-        "id": "t-1781332963075-8wierkah7",
-        "action": "imported",
-        "actionName": "批量导入",
-        "userId": "u1",
-        "userName": "张督导",
-        "time": 1781332963075,
-        "remark": "批量导入问题"
-      }
-    ],
-    "extensionHistory": [],
-    "importBatchId": "import-1781332963075-ajfj90cxc",
-    "importSource": "batch_import"
-  },
-  {
-    "id": "issue-1781332661083-wf8t6iusm",
+    "id": "issue-1781336187793-p4jgkxh2w",
     "title": "CSV导入测试2",
     "description": "通过门店ID导入",
     "category": "服务",
@@ -43,28 +11,28 @@
     "responsibleId": "u3",
     "responsibleName": "李店长",
     "deadline": 1790899200000,
-    "createdAt": 1781332661083,
-    "updatedAt": 1781332661083,
+    "createdAt": 1781336187793,
+    "updatedAt": 1781336187793,
     "attachments": [],
     "rectifyContent": "",
     "rectifyAttachments": [],
     "timeline": [
       {
-        "id": "t-1781332661083-iaxejmxp1",
+        "id": "t-1781336187793-1l62ik7u8",
         "action": "imported",
         "actionName": "批量导入",
         "userId": "u1",
         "userName": "张督导",
-        "time": 1781332661083,
+        "time": 1781336187793,
         "remark": "批量导入问题"
       }
     ],
     "extensionHistory": [],
-    "importBatchId": "import-1781332661083-l91knypwb",
+    "importBatchId": "import-1781336187792-91dqw13b2",
     "importSource": "batch_import"
   },
   {
-    "id": "issue-1781332661083-pssbuamae",
+    "id": "issue-1781336187793-868jprshh",
     "title": "CSV导入测试1",
     "description": "通过门店名解析",
     "category": "安全",
@@ -75,28 +43,28 @@
     "responsibleId": "u2",
     "responsibleName": "王店长",
     "deadline": 1790812800000,
-    "createdAt": 1781332661083,
-    "updatedAt": 1781332661083,
+    "createdAt": 1781336187793,
+    "updatedAt": 1781336187793,
     "attachments": [],
     "rectifyContent": "",
     "rectifyAttachments": [],
     "timeline": [
       {
-        "id": "t-1781332661083-qwagav7nx",
+        "id": "t-1781336187793-h1e9f5ytc",
         "action": "imported",
         "actionName": "批量导入",
         "userId": "u1",
         "userName": "张督导",
-        "time": 1781332661083,
+        "time": 1781336187793,
         "remark": "批量导入问题"
       }
     ],
     "extensionHistory": [],
-    "importBatchId": "import-1781332661083-l91knypwb",
+    "importBatchId": "import-1781336187792-91dqw13b2",
     "importSource": "batch_import"
   },
   {
-    "id": "issue-1781332661074-cxm8qjdd3",
+    "id": "issue-1781336187703-h0qqt3650",
     "title": "部分失败-成功",
     "description": "应该成功",
     "category": "其他",
@@ -107,28 +75,28 @@
     "responsibleId": "u2",
     "responsibleName": "王店长",
     "deadline": 1788220800000,
-    "createdAt": 1781332661074,
-    "updatedAt": 1781332661074,
+    "createdAt": 1781336187703,
+    "updatedAt": 1781336187703,
     "attachments": [],
     "rectifyContent": "",
     "rectifyAttachments": [],
     "timeline": [
       {
-        "id": "t-1781332661074-5sna4mjp4",
+        "id": "t-1781336187703-diwii7lub",
         "action": "imported",
         "actionName": "批量导入",
         "userId": "u1",
         "userName": "张督导",
-        "time": 1781332661074,
+        "time": 1781336187703,
         "remark": "批量导入问题"
       }
     ],
     "extensionHistory": [],
-    "importBatchId": "import-1781332661074-rpyxqnuvg",
+    "importBatchId": "import-1781336187703-ydy3twfil",
     "importSource": "batch_import"
   },
   {
-    "id": "issue-1781332661027-xuw016r2q",
+    "id": "issue-1781336187372-k8q7yoedi",
     "title": "导入测试-问题B",
     "description": "导入测试B",
     "category": "服务",
@@ -139,28 +107,28 @@
     "responsibleId": "u3",
     "responsibleName": "李店长",
     "deadline": 1786752000000,
-    "createdAt": 1781332661027,
-    "updatedAt": 1781332661027,
+    "createdAt": 1781336187372,
+    "updatedAt": 1781336187372,
     "attachments": [],
     "rectifyContent": "",
     "rectifyAttachments": [],
     "timeline": [
       {
-        "id": "t-1781332661027-3me3lrhk8",
+        "id": "t-1781336187372-p13bok38b",
         "action": "imported",
         "actionName": "批量导入",
         "userId": "u1",
         "userName": "张督导",
-        "time": 1781332661027,
+        "time": 1781336187372,
         "remark": "批量导入问题"
       }
     ],
     "extensionHistory": [],
-    "importBatchId": "import-1781332661026-o2ywplwgf",
+    "importBatchId": "import-1781336187371-eesvu7xne",
     "importSource": "batch_import"
   },
   {
-    "id": "issue-1781332661027-ok5oysaq2",
+    "id": "issue-1781336187372-uqfj3y7xi",
     "title": "导入测试-问题A",
     "description": "导入测试A",
     "category": "安全",
@@ -171,28 +139,28 @@
     "responsibleId": "u2",
     "responsibleName": "王店长",
     "deadline": 1786752000000,
-    "createdAt": 1781332661027,
-    "updatedAt": 1781332661027,
+    "createdAt": 1781336187372,
+    "updatedAt": 1781336187372,
     "attachments": [],
     "rectifyContent": "",
     "rectifyAttachments": [],
     "timeline": [
       {
-        "id": "t-1781332661027-vk1bctlaa",
+        "id": "t-1781336187372-lexu4szlv",
         "action": "imported",
         "actionName": "批量导入",
         "userId": "u1",
         "userName": "张督导",
-        "time": 1781332661027,
+        "time": 1781336187372,
         "remark": "批量导入问题"
       }
     ],
     "extensionHistory": [],
-    "importBatchId": "import-1781332661026-o2ywplwgf",
+    "importBatchId": "import-1781336187371-eesvu7xne",
     "importSource": "batch_import"
   },
   {
-    "id": "issue-1781332660833-c9askosbp",
+    "id": "issue-1781336186715-nld2ejkvo",
     "title": "回归测试-专用问题",
     "description": "超期阈值回归测试专用，测试后请删除",
     "category": "其他",
@@ -202,20 +170,20 @@
     "creatorName": "张督导",
     "responsibleId": "u4",
     "responsibleName": "赵店长",
-    "deadline": 1781246260801,
-    "createdAt": 1781332660833,
-    "updatedAt": 1781332660833,
+    "deadline": 1781249786665,
+    "createdAt": 1781336186715,
+    "updatedAt": 1781336186715,
     "attachments": [],
     "rectifyContent": "",
     "rectifyAttachments": [],
     "timeline": [
       {
-        "id": "t-1781332660833-tsnxwemfy",
+        "id": "t-1781336186715-phzuxgao4",
         "action": "created",
         "actionName": "创建问题",
         "userId": "u1",
         "userName": "张督导",
-        "time": 1781332660833,
+        "time": 1781336186715,
         "remark": "超期阈值回归测试专用，测试后请删除"
       }
     ],
@@ -234,9 +202,9 @@
     "creatorName": "张督导",
     "responsibleId": "u2",
     "responsibleName": "王店长",
-    "deadline": 1781505435363,
-    "createdAt": 1781246235363,
-    "updatedAt": 1781246235363,
+    "deadline": 1781508915120,
+    "createdAt": 1781249715120,
+    "updatedAt": 1781249715120,
     "attachments": [
       "/mock/images/fire_exit.jpg"
     ],
@@ -247,7 +215,7 @@
         "actionName": "创建问题",
         "userId": "u1",
         "userName": "张督导",
-        "time": 1781246235363,
+        "time": 1781249715120,
         "remark": "巡查时发现消防通道有杂物堆积"
       }
     ],
@@ -266,9 +234,9 @@
     "creatorName": "张督导",
     "responsibleId": "u3",
     "responsibleName": "李店长",
-    "deadline": 1781419035363,
-    "createdAt": 1781159835363,
-    "updatedAt": 1781289435363,
+    "deadline": 1781422515120,
+    "createdAt": 1781163315120,
+    "updatedAt": 1781292915120,
     "attachments": [
       "/mock/images/uniform.jpg"
     ],
@@ -281,7 +249,7 @@
         "actionName": "创建问题",
         "userId": "u1",
         "userName": "张督导",
-        "time": 1781159835363,
+        "time": 1781163315120,
         "remark": "早班检查发现仪容仪表问题"
       },
       {
@@ -290,7 +258,7 @@
         "actionName": "门店接单",
         "userId": "u3",
         "userName": "李店长",
-        "time": 1781289435363,
+        "time": 1781292915120,
         "remark": "已收到，立即整改"
       }
     ],
@@ -309,9 +277,9 @@
     "creatorName": "张督导",
     "responsibleId": "u4",
     "responsibleName": "赵店长",
-    "deadline": 1781246235363,
-    "createdAt": 1780900635363,
-    "updatedAt": 1781311035363,
+    "deadline": 1781249715120,
+    "createdAt": 1780904115120,
+    "updatedAt": 1781314515120,
     "attachments": [
       "/mock/images/fridge.jpg"
     ],
@@ -326,7 +294,7 @@
         "actionName": "创建问题",
         "userId": "u1",
         "userName": "张督导",
-        "time": 1780900635363,
+        "time": 1780904115120,
         "remark": "温度检测超标"
       },
       {
@@ -335,7 +303,7 @@
         "actionName": "门店接单",
         "userId": "u4",
         "userName": "赵店长",
-        "time": 1780987035363,
+        "time": 1780990515120,
         "remark": "已收到"
       },
       {
@@ -344,7 +312,7 @@
         "actionName": "申请延期",
         "userId": "u4",
         "userName": "赵店长",
-        "time": 1781159835363,
+        "time": 1781163315120,
         "remark": "维修配件需调货，申请延期2天",
         "extensionDays": 2,
         "extensionReason": "维修配件需从厂家调货"
@@ -355,7 +323,7 @@
         "actionName": "延期批准",
         "userId": "u1",
         "userName": "张督导",
-        "time": 1781163435363,
+        "time": 1781166915120,
         "remark": "同意延期",
         "extensionDays": 2
       },
@@ -365,7 +333,7 @@
         "actionName": "提交整改",
         "userId": "u4",
         "userName": "赵店长",
-        "time": 1781311035363,
+        "time": 1781314515120,
         "remark": "已完成维修"
       }
     ],
@@ -375,8 +343,8 @@
         "requestDays": 2,
         "reason": "维修配件需从厂家调货",
         "status": "approved",
-        "requestedAt": 1781159835363,
-        "approvedAt": 1781163435363,
+        "requestedAt": 1781163315120,
+        "approvedAt": 1781166915120,
         "approverId": "u1",
         "approverName": "张督导"
       }

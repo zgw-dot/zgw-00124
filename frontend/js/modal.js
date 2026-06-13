@@ -28,22 +28,8 @@ function closeModal() {
   document.getElementById('modalOverlay').style.display = 'none';
 }
 
-function openCreateModal() {
-  const user = getCurrentUser();
-  if (user.role !== 'supervisor') {
-    showToast('只有督导可以创建问题', 'error');
-    return;
-  }
-
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 3);
-  const defaultDeadline = tomorrow.toISOString().slice(0, 16);
-
-  const storesOptions = stores.map(s => 
-    `<option value="${s.id}">${s.name}</option>`
-  ).join('');
-
-  const bodyHtml = `
+function renderCreateModalBody(defaultDeadline, storesOptions) {
+  return `
     <form id="createForm">
       <div class="form-group">
         <label>问题标题 *</label>
@@ -80,13 +66,31 @@ function openCreateModal() {
       </div>
     </form>
   `;
+}
 
-  const footerHtml = `
+function renderCreateModalFooter() {
+  return `
     <button class="btn btn-secondary" onclick="closeModal()">取消</button>
     <button class="btn btn-primary" onclick="submitCreate()">创建问题</button>
   `;
+}
 
-  openModal('创建巡检问题', bodyHtml, footerHtml);
+function openCreateModal() {
+  const user = getCurrentUser();
+  if (user.role !== 'supervisor') {
+    showToast('只有督导可以创建问题', 'error');
+    return;
+  }
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 3);
+  const defaultDeadline = tomorrow.toISOString().slice(0, 16);
+
+  const storesOptions = stores.map(s => 
+    `<option value="${s.id}">${s.name}</option>`
+  ).join('');
+
+  openModal('创建巡检问题', renderCreateModalBody(defaultDeadline, storesOptions), renderCreateModalFooter());
 }
 
 async function submitCreate() {
@@ -492,23 +496,8 @@ async function handleRejectExtension(issueId, extensionId) {
   }
 }
 
-function openImportModal() {
-  const user = getCurrentUser();
-  if (user.role !== 'supervisor') {
-    showToast('门店账号不能导入问题', 'error');
-    return;
-  }
-
-  const sampleCSV = `标题,分类,门店,截止时间,描述
-货架标签缺失,卫生,朝阳路店,2026-07-01,价签缺失需要补齐
-收银台排队过长,服务,海淀店,2026-07-15,高峰期排队超过15分钟`;
-
-  const sampleJSON = JSON.stringify([
-    { title: '货架标签缺失', category: '卫生', storeId: '朝阳路店', deadline: '2026-07-01', description: '价签缺失需要补齐' },
-    { title: '收银台排队过长', category: '服务', storeId: '海淀店', deadline: '2026-07-15', description: '高峰期排队超过15分钟' }
-  ], null, 2);
-
-  const bodyHtml = `
+function renderImportModalBody(sampleCSV, sampleJSON) {
+  return `
     <form id="importForm">
       <div class="form-group">
         <label>导入格式 *</label>
@@ -545,14 +534,16 @@ function openImportModal() {
       </div>
     </form>
   `;
+}
 
-  const footerHtml = `
+function renderImportModalFooter() {
+  return `
     <button class="btn btn-secondary" onclick="closeModal()">取消</button>
     <button class="btn btn-primary" onclick="submitImport()">开始导入</button>
   `;
+}
 
-  openModal('批量导入问题', bodyHtml, footerHtml);
-
+function setupImportFileHandler() {
   document.getElementById('importFile').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -567,6 +558,26 @@ function openImportModal() {
     };
     reader.readAsText(file, 'utf-8');
   });
+}
+
+function openImportModal() {
+  const user = getCurrentUser();
+  if (user.role !== 'supervisor') {
+    showToast('门店账号不能导入问题', 'error');
+    return;
+  }
+
+  const sampleCSV = `标题,分类,门店,截止时间,描述
+货架标签缺失,卫生,朝阳路店,2026-07-01,价签缺失需要补齐
+收银台排队过长,服务,海淀店,2026-07-15,高峰期排队超过15分钟`;
+
+  const sampleJSON = JSON.stringify([
+    { title: '货架标签缺失', category: '卫生', storeId: '朝阳路店', deadline: '2026-07-01', description: '价签缺失需要补齐' },
+    { title: '收银台排队过长', category: '服务', storeId: '海淀店', deadline: '2026-07-15', description: '高峰期排队超过15分钟' }
+  ], null, 2);
+
+  openModal('批量导入问题', renderImportModalBody(sampleCSV, sampleJSON), renderImportModalFooter());
+  setupImportFileHandler();
 }
 
 function switchSampleTab(format) {
@@ -601,22 +612,8 @@ async function submitImport() {
   }
 }
 
-function showImportResult(result) {
-  const { batchId, totalCount, successCount, failedCount, skippedCount, results } = result;
-
-  const statusLabel = { success: '成功', failed: '失败', skipped: '跳过' };
-  const statusClass = { success: 'import-status-success', failed: 'import-status-failed', skipped: 'import-status-skipped' };
-
-  const resultRows = results.map((r, i) => `
-    <tr>
-      <td>${r.index !== undefined ? r.index + 1 : i + 1}</td>
-      <td><span class="${statusClass[r.status] || ''}">${statusLabel[r.status] || r.status}</span></td>
-      <td>${r.reason || '-'}</td>
-      <td>${r.issueId || '-'}</td>
-    </tr>
-  `).join('');
-
-  const bodyHtml = `
+function renderImportResultSummary(totalCount, successCount, failedCount, skippedCount) {
+  return `
     <div class="import-result-summary">
       <div class="import-result-stat import-result-total">
         <span class="import-result-number">${totalCount}</span>
@@ -635,6 +632,27 @@ function showImportResult(result) {
         <span class="import-result-label">跳过</span>
       </div>
     </div>
+  `;
+}
+
+function renderImportResultRows(results) {
+  const statusLabel = { success: '成功', failed: '失败', skipped: '跳过' };
+  const statusClass = { success: 'import-status-success', failed: 'import-status-failed', skipped: 'import-status-skipped' };
+  return results.map((r, i) => `
+    <tr>
+      <td>${r.index !== undefined ? r.index + 1 : i + 1}</td>
+      <td><span class="${statusClass[r.status] || ''}">${statusLabel[r.status] || r.status}</span></td>
+      <td>${r.reason || '-'}</td>
+      <td>${r.issueId || '-'}</td>
+    </tr>
+  `).join('');
+}
+
+function renderImportResultBody(result) {
+  const { batchId, totalCount, successCount, failedCount, skippedCount, results } = result;
+  const resultRows = renderImportResultRows(results);
+  return `
+    ${renderImportResultSummary(totalCount, successCount, failedCount, skippedCount)}
     <div class="import-batch-id">批次ID：${batchId}</div>
     <div class="import-result-detail">
       <table class="import-result-table">
@@ -652,10 +670,14 @@ function showImportResult(result) {
       </table>
     </div>
   `;
+}
 
-  const footerHtml = `
+function renderImportResultFooter() {
+  return `
     <button class="btn btn-secondary" onclick="closeModal()">关闭</button>
   `;
+}
 
-  openModal('导入结果', bodyHtml, footerHtml);
+function showImportResult(result) {
+  openModal('导入结果', renderImportResultBody(result), renderImportResultFooter());
 }

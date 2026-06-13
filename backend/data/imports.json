@@ -1,6 +1,6 @@
 [
   {
-    "id": "import-1781332661026-o2ywplwgf",
+    "id": "import-1781336187371-eesvu7xne",
     "creatorId": "u1",
     "creatorName": "张督导",
     "format": "json",
@@ -12,18 +12,18 @@
       {
         "index": 0,
         "status": "success",
-        "issueId": "issue-1781332661027-ok5oysaq2"
+        "issueId": "issue-1781336187372-uqfj3y7xi"
       },
       {
         "index": 1,
         "status": "success",
-        "issueId": "issue-1781332661027-xuw016r2q"
+        "issueId": "issue-1781336187372-k8q7yoedi"
       }
     ],
-    "createdAt": 1781332661030
+    "createdAt": 1781336187372
   },
   {
-    "id": "import-1781332661052-7vpzhjwbf",
+    "id": "import-1781336187403-7hc0wgz2x",
     "creatorId": "u1",
     "creatorName": "张督导",
     "format": "json",
@@ -43,10 +43,10 @@
         "reason": "标题+门店+截止时间重复"
       }
     ],
-    "createdAt": 1781332661054
+    "createdAt": 1781336187403
   },
   {
-    "id": "import-1781332661074-rpyxqnuvg",
+    "id": "import-1781336187703-ydy3twfil",
     "creatorId": "u1",
     "creatorName": "张督导",
     "format": "json",
@@ -58,22 +58,22 @@
       {
         "index": 0,
         "status": "success",
-        "issueId": "issue-1781332661074-cxm8qjdd3"
+        "issueId": "issue-1781336187703-h0qqt3650"
       },
       {
         "index": 1,
         "status": "failed",
-        "reason": "缺少必填字段(title/storeId/deadline)"
+        "reason": "缺少必填字段(title)"
       },
       {
         "index": 2,
         "status": "failed",
-        "reason": "缺少必填字段(title/storeId/deadline)"
+        "reason": "缺少必填字段(storeId)"
       },
       {
         "index": 3,
         "status": "failed",
-        "reason": "缺少必填字段(title/storeId/deadline)"
+        "reason": "缺少必填字段(deadline)"
       },
       {
         "index": 4,
@@ -81,10 +81,10 @@
         "reason": "门店不存在"
       }
     ],
-    "createdAt": 1781332661076
+    "createdAt": 1781336187703
   },
   {
-    "id": "import-1781332661083-l91knypwb",
+    "id": "import-1781336187792-91dqw13b2",
     "creatorId": "u1",
     "creatorName": "张督导",
     "format": "csv",
@@ -96,32 +96,14 @@
       {
         "index": 0,
         "status": "success",
-        "issueId": "issue-1781332661083-pssbuamae"
+        "issueId": "issue-1781336187793-868jprshh"
       },
       {
         "index": 1,
         "status": "success",
-        "issueId": "issue-1781332661083-wf8t6iusm"
+        "issueId": "issue-1781336187793-p4jgkxh2w"
       }
     ],
-    "createdAt": 1781332661085
-  },
-  {
-    "id": "import-1781332963075-ajfj90cxc",
-    "creatorId": "u1",
-    "creatorName": "张督导",
-    "format": "json",
-    "totalCount": 1,
-    "successCount": 1,
-    "failedCount": 0,
-    "skippedCount": 0,
-    "results": [
-      {
-        "index": 0,
-        "status": "success",
-        "issueId": "issue-1781332963075-5hargjj86"
-      }
-    ],
-    "createdAt": 1781332963077
+    "createdAt": 1781336187793
   }
 ]

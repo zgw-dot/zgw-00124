@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const importService = require('./importService');
 
 const app = express();
 const PORT = 3000;
@@ -541,168 +542,33 @@ app.post('/api/issues/import', (req, res) => {
     return res.status(403).json({ code: 403, message: '门店账号不能导入问题' });
   }
 
-  let items;
+  let processed;
   try {
-    if (format === 'json') {
-      items = JSON.parse(data);
-      if (!Array.isArray(items)) {
-        return res.json({ code: 400, message: 'JSON数据必须是数组' });
-      }
-    } else if (format === 'csv') {
-      items = parseCSV(data);
-    } else {
-      return res.json({ code: 400, message: '不支持的格式' });
-    }
+    const stores = readJSON(STORES_FILE, []);
+    const existingIssues = readJSON(ISSUES_FILE, []);
+    processed = importService.processImport({
+      format,
+      data,
+      creator,
+      stores,
+      users,
+      existingIssues
+    });
   } catch (e) {
     return res.json({ code: 400, message: '数据解析失败: ' + e.message });
   }
 
-  const FIELD_ALIASES = {
-    '标题': 'title', 'title': 'title',
-    '分类': 'category', 'category': 'category',
-    '门店': 'storeId', '门店ID': 'storeId', 'storeId': 'storeId', 'store': 'storeId',
-    '截止时间': 'deadline', '截止日期': 'deadline', 'deadline': 'deadline',
-    '描述': 'description', 'description': 'description', '说明': 'description'
-  };
-
-  items = items.map(item => {
-    const normalized = {};
-    Object.keys(item).forEach(key => {
-      const mapped = FIELD_ALIASES[key.trim().toLowerCase()] || FIELD_ALIASES[key.trim()] || key.trim();
-      normalized[mapped] = item[key];
-    });
-    return normalized;
-  });
-
-  const stores = readJSON(STORES_FILE, []);
   const issues = readJSON(ISSUES_FILE, []);
-  const batchId = `import-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  const results = [];
-  let successCount = 0;
-  let failedCount = 0;
-  let skippedCount = 0;
-
-  items.forEach((item, index) => {
-    if (!item.title || !item.storeId || !item.deadline) {
-      failedCount++;
-      results.push({ index, status: 'failed', reason: '缺少必填字段(title/storeId/deadline)' });
-      return;
-    }
-
-    let resolvedStoreId = item.storeId;
-    const storeById = stores.find(s => s.id === resolvedStoreId);
-    if (!storeById) {
-      const storeByName = stores.find(s => s.name === resolvedStoreId);
-      if (storeByName) {
-        resolvedStoreId = storeByName.id;
-      } else {
-        failedCount++;
-        results.push({ index, status: 'failed', reason: '门店不存在' });
-        return;
-      }
-    }
-
-    const storeUser = users.find(u => u.storeId === resolvedStoreId && u.role === 'store');
-    if (!storeUser) {
-      failedCount++;
-      results.push({ index, status: 'failed', reason: '门店用户不存在' });
-      return;
-    }
-
-    let deadlineTimestamp;
-    if (typeof item.deadline === 'number') {
-      deadlineTimestamp = item.deadline;
-    } else {
-      deadlineTimestamp = new Date(item.deadline).getTime();
-    }
-    if (isNaN(deadlineTimestamp)) {
-      failedCount++;
-      results.push({ index, status: 'failed', reason: '截止时间格式无效' });
-      return;
-    }
-
-    const deadlineDate = new Date(deadlineTimestamp);
-    const deadlineStr = `${deadlineDate.getFullYear()}-${String(deadlineDate.getMonth() + 1).padStart(2, '0')}-${String(deadlineDate.getDate()).padStart(2, '0')}`;
-
-    const conflict = issues.find(existing => {
-      if (existing.title !== item.title || existing.storeId !== resolvedStoreId) return false;
-      const existingDeadline = new Date(existing.deadline);
-      const existingDeadlineStr = `${existingDeadline.getFullYear()}-${String(existingDeadline.getMonth() + 1).padStart(2, '0')}-${String(existingDeadline.getDate()).padStart(2, '0')}`;
-      return existingDeadlineStr === deadlineStr;
-    });
-
-    if (conflict) {
-      skippedCount++;
-      results.push({ index, status: 'skipped', reason: '标题+门店+截止时间重复' });
-      return;
-    }
-
-    const now = Date.now();
-    const newIssue = {
-      id: generateId('issue'),
-      title: item.title,
-      description: item.description || '',
-      category: item.category || '其他',
-      status: 'pending',
-      storeId: resolvedStoreId,
-      creatorId,
-      creatorName: creator.name,
-      responsibleId: storeUser.id,
-      responsibleName: storeUser.name,
-      deadline: deadlineTimestamp,
-      createdAt: now,
-      updatedAt: now,
-      attachments: [],
-      rectifyContent: '',
-      rectifyAttachments: [],
-      timeline: [],
-      extensionHistory: [],
-      importBatchId: batchId,
-      importSource: 'batch_import'
-    };
-
-    addTimelineEntry(
-      newIssue,
-      'imported',
-      '批量导入',
-      creatorId,
-      creator.name,
-      '批量导入问题'
-    );
-
-    issues.unshift(newIssue);
-    successCount++;
-    results.push({ index, status: 'success', issueId: newIssue.id });
-  });
-
+  processed.newIssues.forEach(issue => issues.unshift(issue));
   writeJSON(ISSUES_FILE, issues);
 
   const imports = readJSON(IMPORTS_FILE, []);
-  const importRecord = {
-    id: batchId,
-    creatorId,
-    creatorName: creator.name,
-    format,
-    totalCount: items.length,
-    successCount,
-    failedCount,
-    skippedCount,
-    results,
-    createdAt: Date.now()
-  };
-  imports.push(importRecord);
+  imports.push(processed.importRecord);
   writeJSON(IMPORTS_FILE, imports);
 
   res.json({
     code: 0,
-    data: {
-      batchId,
-      totalCount: items.length,
-      successCount,
-      failedCount,
-      skippedCount,
-      results
-    }
+    data: processed.resultSummary
   });
 });
 
@@ -1192,94 +1058,23 @@ function formatDate(timestamp) {
   return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
-function parseCSV(csvText) {
-  let text = csvText.replace(/^\uFEFF/, '');
-  const rows = [];
-  let current = '';
-  let inQuotes = false;
-  let row = [];
-
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-    if (inQuotes) {
-      if (ch === '"') {
-        if (i + 1 < text.length && text[i + 1] === '"') {
-          current += '"';
-          i++;
-        } else {
-          inQuotes = false;
-        }
-      } else {
-        current += ch;
-      }
-    } else {
-      if (ch === '"') {
-        inQuotes = true;
-      } else if (ch === ',') {
-        row.push(current);
-        current = '';
-      } else if (ch === '\r') {
-        if (i + 1 < text.length && text[i + 1] === '\n') {
-          i++;
-        }
-        row.push(current);
-        current = '';
-        if (row.length > 0 && row.some(c => c !== '')) {
-          rows.push(row);
-        }
-        row = [];
-      } else if (ch === '\n') {
-        row.push(current);
-        current = '';
-        if (row.length > 0 && row.some(c => c !== '')) {
-          rows.push(row);
-        }
-        row = [];
-      } else {
-        current += ch;
-      }
-    }
-  }
-
-  row.push(current);
-  if (row.length > 0 && row.some(c => c !== '')) {
-    rows.push(row);
-  }
-
-  if (rows.length < 2) return [];
-
-  const headers = rows[0].map(h => h.trim());
-  const result = [];
-  for (let r = 1; r < rows.length; r++) {
-    const obj = {};
-    for (let c = 0; c < headers.length; c++) {
-      obj[headers[c]] = c < rows[r].length ? rows[r][c].trim() : '';
-    }
-    result.push(obj);
-  }
-  return result;
-}
-
 app.get('/api/imports', (req, res) => {
   const imports = readJSON(IMPORTS_FILE, []);
   let { page = 1, pageSize = 20 } = req.query;
   page = parseInt(page);
   pageSize = parseInt(pageSize);
 
-  const sorted = [...imports].sort((a, b) => b.createdAt - a.createdAt);
-  const total = sorted.length;
-  const start = (page - 1) * pageSize;
-  const list = sorted.slice(start, start + pageSize);
+  const result = importService.listImportRecords(imports, { page, pageSize });
 
   res.json({
     code: 0,
-    data: { list, total, page, pageSize }
+    data: result
   });
 });
 
 app.get('/api/imports/:id', (req, res) => {
   const imports = readJSON(IMPORTS_FILE, []);
-  const record = imports.find(r => r.id === req.params.id);
+  const record = importService.getImportRecordDetail(imports, req.params.id);
   if (!record) {
     return res.json({ code: 404, message: '导入记录不存在' });
   }
